@@ -1,0 +1,55 @@
+services:
+  app:
+    image: ${BRICKLLM_IMAGE_NAME}:${BRICKLLM_IMAGE_TAG}
+    restart: unless-stopped
+    command: gunicorn -w 3 -b :8091 app:server
+    environment:
+      REDIS_URL_BROKER: redis://redis:6380/0
+      REDIS_URL_BACKEND: redis://redis:6380/0
+    ports:
+      - ${BRICKLLM_APP_PUBLIC_PORT}:8091
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - brickllm_network
+  celery:
+    image: ${BRICKLLM_IMAGE_NAME}:${BRICKLLM_IMAGE_TAG}
+    restart: unless-stopped
+    command: celery -A app.celery_app worker --loglevel=INFO
+    depends_on:
+      app:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    networks:
+      - brickllm_network
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+  redis:
+    image: "redis:3.0-alpine"
+    restart: unless-stopped
+    command: redis-server --port 6380
+    volumes:
+      - "redis:/data"
+    networks:
+      - brickllm_network
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6380", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+volumes:
+  redis: {}
+networks:
+  brickllm_network:
+    driver: bridge
+    name: ${NETWORK_NAME_BRICKLLM}

@@ -1,0 +1,52 @@
+version: "3"
+
+vars:
+  PROXY_COMPOSE_PROJECT_NAME: "staging-proxy"
+  ACME_CA_PROD: "https://acme-v02.api.letsencrypt.org/directory"
+  ACME_CA_STAGING: "https://acme-staging-v02.api.letsencrypt.org/directory"
+  CADDY_ACME_CA: "{{not .USE_STAGING | ternary .ACME_CA_PROD .ACME_CA_STAGING}}"
+  DOTENV_CONFIG_FILE: "{{.TASKFILE_DIR}}/.env.config"
+  NETWORK_NAME_BRICKLLM: "brickllm_network"
+
+env:
+  CADDY_ACME_CA: "{{.CADDY_ACME_CA}}"
+  NETWORK_NAME_BRICKLLM: "{{.NETWORK_NAME_BRICKLLM}}"
+
+dotenv: [.env.config]
+
+includes:
+  brickllm: ./brickllm/Taskfile.yml
+
+tasks:
+  check-env-file:
+    internal: true
+    cmds:
+      - |
+        if [ ! -f {{.DOTENV_CONFIG_FILE}} ]; then
+          echo "Error: '{{.DOTENV_CONFIG_FILE}}' file is missing"
+          exit 1
+        fi
+
+  proxy-up:
+    deps:
+      - check-env-file
+    desc: "Start the reverse proxy that will serve the Data Cellar services"
+    cmds:
+      - docker compose -p {{.PROXY_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml up -d --wait
+
+  proxy-down:
+    desc: "Stop the reverse proxy"
+    cmds:
+      - docker compose -p {{.PROXY_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down
+
+  up:
+    desc: "Start the reverse proxy and all the services"
+    cmds:
+      - task: brickllm:up
+      - task: proxy-up
+
+  down:
+    desc: "Stop the reverse proxy and all the services"
+    cmds:
+      - task: proxy-down
+      - task: brickllm:down

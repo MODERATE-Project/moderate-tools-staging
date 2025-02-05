@@ -1,0 +1,28 @@
+services:
+  caddy:
+    image: caddy:2.7
+    restart: unless-stopped
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./conf.d:/etc/caddy/conf.d
+      - caddy_data:/data
+      - caddy_config:/config
+    cap_add:
+      - NET_ADMIN
+    environment:
+      CADDY_DEBUG: 1
+      CADDY_ACME_CA: ${CADDY_ACME_CA:-https://acme-v02.api.letsencrypt.org/directory}
+      DNS_HOSTNAME: ${DNS_HOSTNAME}
+      NETWORK_NAME_BRICKLLM: ${NETWORK_NAME_BRICKLLM}
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - brickllm_network
+volumes:
+  caddy_data: {}
+  caddy_config: {}
+networks:
+  brickllm_network:
+    name: ${NETWORK_NAME_BRICKLLM}
+    external: true

@@ -1,0 +1,3 @@
+brick.{$DNS_HOSTNAME} {
+	reverse_proxy app.{$NETWORK_NAME_BRICKLLM}:8091
+}

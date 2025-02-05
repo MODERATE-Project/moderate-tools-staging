@@ -1,0 +1,49 @@
+version: "3"
+
+vars:
+  BRICKLLM_COMPOSE_PROJECT_NAME: "brickllm"
+  BRICKLLM_GIT_URL: "https://github.com/EURAC-EEBgroup/BrickLLM-App.git"
+  BRICKLLM_TREEISH: "67ea33a"
+  BRICKLLM_DIR: "{{.TASKFILE_DIR}}/brickllm"
+  BRICKLLM_IMAGE_NAME: "brickllm"
+  BRICKLLM_IMAGE_TAG: "latest"
+  BRICKLLM_APP_PUBLIC_PORT: "8091"
+
+env:
+  BRICKLLM_IMAGE_NAME: "{{.BRICKLLM_IMAGE_NAME}}"
+  BRICKLLM_IMAGE_TAG: "{{.BRICKLLM_IMAGE_TAG}}"
+  BRICKLLM_APP_PUBLIC_PORT: "{{.BRICKLLM_APP_PUBLIC_PORT}}"
+
+tasks:
+  clone:
+    desc: "Clone the BrickLLM Git repository"
+    cmds:
+      - git clone {{.BRICKLLM_GIT_URL}} {{.BRICKLLM_DIR}}
+      - cd {{.BRICKLLM_DIR}} && git checkout {{.BRICKLLM_TREEISH}}
+    status:
+      - test -d {{.BRICKLLM_DIR}}
+
+  build:
+    desc: "Build the BrickLLM Docker image"
+    deps:
+      - clone
+    dir: "{{.BRICKLLM_DIR}}"
+    cmds:
+      - docker build -t {{.BRICKLLM_IMAGE_NAME}}:{{.BRICKLLM_IMAGE_TAG}} .
+
+  up:
+    desc: "Start the BrickLLM Docker containers"
+    deps:
+      - build
+    cmds:
+      - docker compose -p {{.BRICKLLM_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml up -d --build --wait
+
+  down:
+    desc: "Stop the BrickLLM Docker containers"
+    cmds:
+      - docker compose -p {{.BRICKLLM_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down
+
+  clean:
+    desc: "Clean up the BrickLLM Docker containers"
+    cmds:
+      - docker compose -p {{.BRICKLLM_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down -v
