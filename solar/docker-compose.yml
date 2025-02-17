@@ -1,0 +1,27 @@
+services:
+  backend:
+    image: ${SOLAR_CADASTRE_BACKEND_IMAGE_NAME}:${SOLAR_CADASTRE_BACKEND_IMAGE_TAG}
+    ports:
+      - "${SOLAR_CADASTRE_BACKEND_PUBLIC_PORT}:8000"
+    environment:
+      GEOSERVER_URL: ${SOLAR_CADASTRE_GEOSERVER_URL}
+      DB_NAME: ${SOLAR_CADASTRE_DB_NAME}
+      DB_USER: ${SOLAR_CADASTRE_DB_USER}
+      DB_PASSWORD: ${SOLAR_CADASTRE_DB_PASSWORD}
+      DB_HOST: ${SOLAR_CADASTRE_DB_HOST}
+      DB_PORT: ${SOLAR_CADASTRE_DB_PORT}
+    networks:
+      - solar_cadastre_network
+  frontend:
+    # ToDo: Upgrade to the production image as soon as possible
+    image: ${SOLAR_CADASTRE_FRONTEND_IMAGE_NAME}:${SOLAR_CADASTRE_FRONTEND_IMAGE_TAG}
+    ports:
+      - "${SOLAR_CADASTRE_FRONTEND_PUBLIC_PORT}:4200"
+    environment:
+      NODE_ENV: development
+    networks:
+      - solar_cadastre_network
+networks:
+  solar_cadastre_network:
+    driver: bridge
+    name: ${NETWORK_NAME_SOLAR_CADASTRE}

@@ -14,15 +14,20 @@ services:
       CADDY_ACME_CA: ${CADDY_ACME_CA:-https://acme-v02.api.letsencrypt.org/directory}
       DNS_HOSTNAME: ${DNS_HOSTNAME}
       NETWORK_NAME_BRICKLLM: ${NETWORK_NAME_BRICKLLM}
+      NETWORK_NAME_SOLAR_CADASTRE: ${NETWORK_NAME_SOLAR_CADASTRE}
     ports:
       - 80:80
       - 443:443
     networks:
       - brickllm_network
+      - solar_cadastre_network
 volumes:
   caddy_data: {}
   caddy_config: {}
 networks:
   brickllm_network:
     name: ${NETWORK_NAME_BRICKLLM}
+    external: true
+  solar_cadastre_network:
+    name: ${NETWORK_NAME_SOLAR_CADASTRE}
     external: true

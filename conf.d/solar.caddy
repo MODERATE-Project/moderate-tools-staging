@@ -1,0 +1,4 @@
+solar.{$DNS_HOSTNAME} {
+	# ToDo: Upgrade to the production image as soon as possible
+	reverse_proxy frontend.{$NETWORK_NAME_SOLAR_CADASTRE}:4200
+}

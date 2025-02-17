@@ -7,15 +7,18 @@ vars:
   CADDY_ACME_CA: "{{not .USE_STAGING | ternary .ACME_CA_PROD .ACME_CA_STAGING}}"
   DOTENV_CONFIG_FILE: "{{.TASKFILE_DIR}}/.env.config"
   NETWORK_NAME_BRICKLLM: "brickllm_network"
+  NETWORK_NAME_SOLAR_CADASTRE: "solar_cadastre_network"
 
 env:
   CADDY_ACME_CA: "{{.CADDY_ACME_CA}}"
   NETWORK_NAME_BRICKLLM: "{{.NETWORK_NAME_BRICKLLM}}"
+  NETWORK_NAME_SOLAR_CADASTRE: "{{.NETWORK_NAME_SOLAR_CADASTRE}}"
 
 dotenv: [.env.config]
 
 includes:
   brickllm: ./brickllm/Taskfile.yml
+  solar: ./solar/Taskfile.yml
 
 tasks:
   check-env-file:
@@ -43,6 +46,7 @@ tasks:
     desc: "Start the reverse proxy and all the services"
     cmds:
       - task: brickllm:up
+      - task: solar:up
       - task: proxy-up
 
   down:
@@ -50,3 +54,4 @@ tasks:
     cmds:
       - task: proxy-down
       - task: brickllm:down
+      - task: solar:down

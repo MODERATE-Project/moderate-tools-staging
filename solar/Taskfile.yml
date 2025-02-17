@@ -1,0 +1,72 @@
+version: "3"
+
+vars:
+  SOLAR_CADASTRE_COMPOSE_PROJECT_NAME: "solar-cadastre"
+  SOLAR_CADASTRE_GIT_URL: "https://github.com/MODERATE-Project/solar-cadastre.git"
+  SOLAR_CADASTRE_TREEISH: "dockerization"
+  SOLAR_CADASTRE_DIR: "{{.TASKFILE_DIR}}/solar-cadastre"
+  SOLAR_CADASTRE_BACKEND_IMAGE_NAME: "solar-cadastre-backend"
+  SOLAR_CADASTRE_BACKEND_IMAGE_TAG: "latest"
+  SOLAR_CADASTRE_BACKEND_PUBLIC_PORT: "8282"
+  SOLAR_CADASTRE_FRONTEND_IMAGE_NAME: "solar-cadastre-frontend"
+  SOLAR_CADASTRE_FRONTEND_IMAGE_TAG: "latest"
+  SOLAR_CADASTRE_FRONTEND_PUBLIC_PORT: "8283"
+
+env:
+  SOLAR_CADASTRE_BACKEND_IMAGE_NAME: "{{.SOLAR_CADASTRE_BACKEND_IMAGE_NAME}}"
+  SOLAR_CADASTRE_BACKEND_IMAGE_TAG: "{{.SOLAR_CADASTRE_BACKEND_IMAGE_TAG}}"
+  SOLAR_CADASTRE_BACKEND_PUBLIC_PORT: "{{.SOLAR_CADASTRE_BACKEND_PUBLIC_PORT}}"
+  SOLAR_CADASTRE_FRONTEND_IMAGE_NAME: "{{.SOLAR_CADASTRE_FRONTEND_IMAGE_NAME}}"
+  SOLAR_CADASTRE_FRONTEND_IMAGE_TAG: "{{.SOLAR_CADASTRE_FRONTEND_IMAGE_TAG}}"
+  SOLAR_CADASTRE_FRONTEND_PUBLIC_PORT: "{{.SOLAR_CADASTRE_FRONTEND_PUBLIC_PORT}}"
+
+tasks:
+  clone:
+    desc: "Clone the Solar Cadastre Git repository"
+    cmds:
+      - git clone {{.SOLAR_CADASTRE_GIT_URL}} {{.SOLAR_CADASTRE_DIR}}
+      - cd {{.SOLAR_CADASTRE_DIR}} && git checkout {{.SOLAR_CADASTRE_TREEISH}}
+    status:
+      - test -d {{.SOLAR_CADASTRE_DIR}}
+
+  build-backend:
+    desc: "Build the Solar Cadastre Backend Docker image"
+    deps:
+      - clone
+    dir: "{{.SOLAR_CADASTRE_DIR}}/Backend-Moderate"
+    cmds:
+      - docker build -t {{.SOLAR_CADASTRE_BACKEND_IMAGE_NAME}}:{{.SOLAR_CADASTRE_BACKEND_IMAGE_TAG}} .
+
+  build-frontend:
+    desc: "Build the Solar Cadastre Frontend Docker image"
+    deps:
+      - clone
+    dir: "{{.SOLAR_CADASTRE_DIR}}/Frontend-Moderate"
+    cmds:
+      # ToDo: Upgrade to the production image as soon as possible
+      - >
+        docker build -f Dockerfile.dev
+        -t {{.SOLAR_CADASTRE_FRONTEND_IMAGE_NAME}}:{{.SOLAR_CADASTRE_FRONTEND_IMAGE_TAG}} .
+
+  build:
+    desc: "Build the Solar Cadastre Docker images"
+    cmds:
+      - task: build-backend
+      - task: build-frontend
+
+  up:
+    desc: "Start the Solar Cadastre Docker containers"
+    deps:
+      - build
+    cmds:
+      - docker compose -p {{.SOLAR_CADASTRE_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml up -d --build --wait
+
+  down:
+    desc: "Stop the Solar Cadastre Docker containers"
+    cmds:
+      - docker compose -p {{.SOLAR_CADASTRE_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down
+
+  clean:
+    desc: "Clean up the Solar Cadastre Docker containers"
+    cmds:
+      - docker compose -p {{.SOLAR_CADASTRE_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down -v
