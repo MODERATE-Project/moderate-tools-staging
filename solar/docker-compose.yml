@@ -20,7 +20,7 @@ services:
       NODE_ENV: production
     networks:
       - solar_cadastre_network
-  geoserver:
+  proxy:
     image: caddy:2.7
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
@@ -29,7 +29,9 @@ services:
     environment:
       - GEOSERVER_URL=${SOLAR_CADASTRE_GEOSERVER_SCHEME_HOST}
     networks:
-      - solar_cadastre_network
+      solar_cadastre_network:
+        aliases:
+          - geoserver
 networks:
   solar_cadastre_network:
     driver: bridge
