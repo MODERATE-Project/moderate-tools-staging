@@ -67,3 +67,5 @@ tasks:
     desc: "Clean up the Solar Cadastre Docker containers"
     cmds:
       - docker compose -p {{.SOLAR_CADASTRE_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down -v
+      - cmd: rm -fr {{.SOLAR_CADASTRE_DIR}}
+        ignore_error: true
