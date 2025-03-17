@@ -1,0 +1,26 @@
+services:
+  backend:
+    image: ${BUILDING_BENCHMARK_BACKEND_IMAGE_NAME}:${BUILDING_BENCHMARK_BACKEND_IMAGE_TAG}
+    command: uvicorn main:app --host 0.0.0.0
+    ports:
+      - "${BUILDING_BENCHMARK_BACKEND_PUBLIC_PORT}:8000"
+    networks:
+      - building_benchmark_network
+  frontend:
+    image: ${BUILDING_BENCHMARK_FRONTEND_IMAGE_NAME}:${BUILDING_BENCHMARK_FRONTEND_IMAGE_TAG}
+    command: gunicorn -w 3 -b :8099 app:server
+    ports:
+      - "${BUILDING_BENCHMARK_FRONTEND_PUBLIC_PORT}:8099"
+    depends_on:
+      - backend
+    environment:
+      USERNAME_SHOPS: ${USERNAME_SHOPS}
+      PASSWORD_SHOPS: ${PASSWORD_SHOPS}
+      URL_SHOPS: ${URL_SHOPS}
+      URL_API_DATA_METADATA: backend:8000
+    networks:
+      - building_benchmark_network
+networks:
+  building_benchmark_network:
+    driver: bridge
+    name: ${NETWORK_NAME_BUILDING_BENCHMARK}

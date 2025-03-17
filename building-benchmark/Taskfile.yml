@@ -1,0 +1,71 @@
+version: "3"
+
+vars:
+  BUILDING_BENCHMARK_COMPOSE_PROJECT_NAME: "building-benchmark"
+  BUILDING_BENCHMARK_GIT_URL: "https://github.com/MODERATE-Project/MODERATE_building_benchmarking.git"
+  BUILDING_BENCHMARK_TREEISH: "eabb1ba"
+  BUILDING_BENCHMARK_DIR: "{{.TASKFILE_DIR}}/building-benchmark"
+  BUILDING_BENCHMARK_BACKEND_IMAGE_NAME: "building-benchmark-backend"
+  BUILDING_BENCHMARK_BACKEND_IMAGE_TAG: "latest"
+  BUILDING_BENCHMARK_BACKEND_PUBLIC_PORT: "18000"
+  BUILDING_BENCHMARK_FRONTEND_IMAGE_NAME: "building-benchmark-frontend"
+  BUILDING_BENCHMARK_FRONTEND_IMAGE_TAG: "latest"
+  BUILDING_BENCHMARK_FRONTEND_PUBLIC_PORT: "18099"
+
+env:
+  BUILDING_BENCHMARK_BACKEND_IMAGE_NAME: "{{.BUILDING_BENCHMARK_BACKEND_IMAGE_NAME}}"
+  BUILDING_BENCHMARK_BACKEND_IMAGE_TAG: "{{.BUILDING_BENCHMARK_BACKEND_IMAGE_TAG}}"
+  BUILDING_BENCHMARK_BACKEND_PUBLIC_PORT: "{{.BUILDING_BENCHMARK_BACKEND_PUBLIC_PORT}}"
+  BUILDING_BENCHMARK_FRONTEND_IMAGE_NAME: "{{.BUILDING_BENCHMARK_FRONTEND_IMAGE_NAME}}"
+  BUILDING_BENCHMARK_FRONTEND_IMAGE_TAG: "{{.BUILDING_BENCHMARK_FRONTEND_IMAGE_TAG}}"
+  BUILDING_BENCHMARK_FRONTEND_PUBLIC_PORT: "{{.BUILDING_BENCHMARK_FRONTEND_PUBLIC_PORT}}"
+
+tasks:
+  clone:
+    desc: "Clone the Building Benchmark Git repository"
+    cmds:
+      - git clone {{.BUILDING_BENCHMARK_GIT_URL}} {{.BUILDING_BENCHMARK_DIR}}
+      - cd {{.BUILDING_BENCHMARK_DIR}} && git checkout {{.BUILDING_BENCHMARK_TREEISH}}
+    status:
+      - test -d {{.BUILDING_BENCHMARK_DIR}}
+
+  build-backend:
+    desc: "Build the Building Benchmark Backend Docker image"
+    deps:
+      - clone
+    dir: "{{.BUILDING_BENCHMARK_DIR}}/backend"
+    cmds:
+      - docker build -t {{.BUILDING_BENCHMARK_BACKEND_IMAGE_NAME}}:{{.BUILDING_BENCHMARK_BACKEND_IMAGE_TAG}} .
+
+  build-frontend:
+    desc: "Build the Building Benchmark Frontend Docker image"
+    deps:
+      - clone
+    dir: "{{.BUILDING_BENCHMARK_DIR}}/frontend_mantine"
+    cmds:
+      - docker build -t {{.BUILDING_BENCHMARK_FRONTEND_IMAGE_NAME}}:{{.BUILDING_BENCHMARK_FRONTEND_IMAGE_TAG}} .
+
+  build:
+    desc: "Build the Building Benchmark Docker images"
+    cmds:
+      - task: build-backend
+      - task: build-frontend
+
+  up:
+    desc: "Start the Solar Cadastre Docker containers"
+    deps:
+      - build
+    cmds:
+      - docker compose -p {{.BUILDING_BENCHMARK_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml up -d --build --wait
+
+  down:
+    desc: "Stop the Solar Cadastre Docker containers"
+    cmds:
+      - docker compose -p {{.BUILDING_BENCHMARK_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down
+
+  clean:
+    desc: "Clean up the Solar Cadastre Docker containers"
+    cmds:
+      - docker compose -p {{.BUILDING_BENCHMARK_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down -v
+      - cmd: rm -fr {{.BUILDING_BENCHMARK_DIR}}
+        ignore_error: true

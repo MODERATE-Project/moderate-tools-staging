@@ -8,17 +8,20 @@ vars:
   DOTENV_CONFIG_FILE: "{{.TASKFILE_DIR}}/.env.config"
   NETWORK_NAME_BRICKLLM: "brickllm_network"
   NETWORK_NAME_SOLAR_CADASTRE: "solar_cadastre_network"
+  NETWORK_NAME_BUILDING_BENCHMARK: "building_benchmark_network"
 
 env:
   CADDY_ACME_CA: "{{.CADDY_ACME_CA}}"
   NETWORK_NAME_BRICKLLM: "{{.NETWORK_NAME_BRICKLLM}}"
   NETWORK_NAME_SOLAR_CADASTRE: "{{.NETWORK_NAME_SOLAR_CADASTRE}}"
+  NETWORK_NAME_BUILDING_BENCHMARK: "{{.NETWORK_NAME_BUILDING_BENCHMARK}}"
 
 dotenv: [.env.config]
 
 includes:
   brickllm: ./brickllm/Taskfile.yml
   solar: ./solar/Taskfile.yml
+  building-benchmark: ./building-benchmark/Taskfile.yml
 
 tasks:
   check-env-file:
