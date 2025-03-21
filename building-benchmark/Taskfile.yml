@@ -3,7 +3,7 @@ version: "3"
 vars:
   BUILDING_BENCHMARK_COMPOSE_PROJECT_NAME: "building-benchmark"
   BUILDING_BENCHMARK_GIT_URL: "https://github.com/MODERATE-Project/MODERATE_building_benchmarking.git"
-  BUILDING_BENCHMARK_TREEISH: "eabb1ba"
+  BUILDING_BENCHMARK_TREEISH: "b469455"
   BUILDING_BENCHMARK_DIR: "{{.TASKFILE_DIR}}/building-benchmark"
   BUILDING_BENCHMARK_BACKEND_IMAGE_NAME: "building-benchmark-backend"
   BUILDING_BENCHMARK_BACKEND_IMAGE_TAG: "latest"
