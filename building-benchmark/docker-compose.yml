@@ -17,7 +17,7 @@ services:
       USERNAME_SHOPS: ${USERNAME_SHOPS}
       PASSWORD_SHOPS: ${PASSWORD_SHOPS}
       URL_SHOPS: ${URL_SHOPS}
-      URL_API_DATA_METADATA: backend:8000
+      URL_API_DATA_METADATA: http://backend:8000
     networks:
       - building_benchmark_network
 networks:

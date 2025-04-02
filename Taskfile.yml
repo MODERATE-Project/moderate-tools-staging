@@ -50,6 +50,7 @@ tasks:
     cmds:
       - task: brickllm:up
       - task: solar:up
+      - task: building-benchmark:up
       - task: proxy-up
 
   down:
@@ -58,3 +59,4 @@ tasks:
       - task: proxy-down
       - task: brickllm:down
       - task: solar:down
+      - task: building-benchmark:down

@@ -15,12 +15,14 @@ services:
       DNS_HOSTNAME: ${DNS_HOSTNAME}
       NETWORK_NAME_BRICKLLM: ${NETWORK_NAME_BRICKLLM}
       NETWORK_NAME_SOLAR_CADASTRE: ${NETWORK_NAME_SOLAR_CADASTRE}
+      NETWORK_NAME_BUILDING_BENCHMARK: ${NETWORK_NAME_BUILDING_BENCHMARK}
     ports:
       - 80:80
       - 443:443
     networks:
       - brickllm_network
       - solar_cadastre_network
+      - building_benchmark_network
 volumes:
   caddy_data: {}
   caddy_config: {}
@@ -30,4 +32,7 @@ networks:
     external: true
   solar_cadastre_network:
     name: ${NETWORK_NAME_SOLAR_CADASTRE}
+    external: true
+  building_benchmark_network:
+    name: ${NETWORK_NAME_BUILDING_BENCHMARK}
     external: true
