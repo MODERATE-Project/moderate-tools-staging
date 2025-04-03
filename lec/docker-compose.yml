@@ -1,0 +1,50 @@
+services:
+  app:
+    image: ${LEC_FRONTEND_IMAGE_NAME}:${LEC_FRONTEND_IMAGE_TAG}
+    environment:
+      WDS_SOCKET_PORT: 3000
+      MODERATE_GEOSERVER_PROXY_PASS_URL: ${MODERATE_GEOSERVER_PROXY_PASS_URL}
+      MODERATE_MUNICIPALITIES_SVC_PROXY_PASS_URL: ${MODERATE_MUNICIPALITIES_SVC_PROXY_PASS_URL}
+      MODERATE_BUILDINGS_SVC_PROXY_PASS_URL: ${MODERATE_BUILDINGS_SVC_PROXY_PASS_URL}
+      MODERATE_REPORT_SVC_PROXY_PASS_URL: ${MODERATE_REPORT_SVC_PROXY_PASS_URL}
+    restart: unless-stopped
+    ports:
+      - "${LEC_FRONTEND_PUBLIC_PORT}:80"
+    networks:
+      - lec_network
+  municipalities_service:
+    image: ${LEC_MUNICIPALITY_SERVICE_IMAGE_NAME}:${LEC_MUNICIPALITY_SERVICE_IMAGE_TAG}
+    ports:
+      - "${LEC_MUNICIPALITY_SERVICE_PUBLIC_PORT}:5000"
+    restart: unless-stopped
+    networks:
+      - lec_network
+  buildings_service:
+    image: ${LEC_BUILDING_SERVICE_IMAGE_NAME}:${LEC_BUILDING_SERVICE_IMAGE_TAG}
+    ports:
+      - "${LEC_BUILDING_SERVICE_PUBLIC_PORT}:5000"
+    restart: unless-stopped
+    networks:
+      - lec_network
+  report_service:
+    image: ${LEC_REPORT_SERVICE_IMAGE_NAME}:${LEC_REPORT_SERVICE_IMAGE_TAG}
+    environment:
+      BUILDINGS_API_URL: ${MODERATE_BUILDINGS_SVC_PROXY_PASS_URL}
+    ports:
+      - "${LEC_REPORT_SERVICE_PUBLIC_PORT}:5000"
+    restart: unless-stopped
+    networks:
+      - lec_network
+  docx-to-pdf:
+    image: moalhaddar/docx-to-pdf:2.1.0-12
+    ports:
+      - "${LEC_DOCX_TO_PDF_PUBLIC_PORT}:8080"
+    environment:
+      pool.size: 2
+    restart: unless-stopped
+    networks:
+      - lec_network
+networks:
+  lec_network:
+    driver: bridge
+    name: ${NETWORK_NAME_LEC}

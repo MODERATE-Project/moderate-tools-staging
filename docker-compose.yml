@@ -16,6 +16,7 @@ services:
       NETWORK_NAME_BRICKLLM: ${NETWORK_NAME_BRICKLLM}
       NETWORK_NAME_SOLAR_CADASTRE: ${NETWORK_NAME_SOLAR_CADASTRE}
       NETWORK_NAME_BUILDING_BENCHMARK: ${NETWORK_NAME_BUILDING_BENCHMARK}
+      NETWORK_NAME_LEC: ${NETWORK_NAME_LEC}
     ports:
       - 80:80
       - 443:443
@@ -23,6 +24,7 @@ services:
       - brickllm_network
       - solar_cadastre_network
       - building_benchmark_network
+      - lec_network
 volumes:
   caddy_data: {}
   caddy_config: {}
@@ -35,4 +37,7 @@ networks:
     external: true
   building_benchmark_network:
     name: ${NETWORK_NAME_BUILDING_BENCHMARK}
+    external: true
+  lec_network:
+    name: ${NETWORK_NAME_LEC}
     external: true

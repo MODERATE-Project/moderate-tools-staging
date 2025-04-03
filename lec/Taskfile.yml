@@ -1,0 +1,118 @@
+version: "3"
+
+vars:
+  LEC_COMPOSE_PROJECT_NAME: "staging-lec"
+  LEC_GIT_URL: "https://github.com/MODERATE-Project/lec-location-assessment-tool"
+  LEC_TREEISH: "1785f82"
+  LEC_DIR: "{{.TASKFILE_DIR}}/lec"
+  LEC_FRONTEND_IMAGE_NAME: "lec-frontend"
+  LEC_FRONTEND_IMAGE_TAG: "latest"
+  LEC_FRONTEND_PUBLIC_PORT: "29080"
+  LEC_MUNICIPALITY_SERVICE_IMAGE_NAME: "lec-municipality-service"
+  LEC_MUNICIPALITY_SERVICE_IMAGE_TAG: "latest"
+  LEC_MUNICIPALITY_SERVICE_PUBLIC_PORT: "29081"
+  LEC_BUILDING_SERVICE_IMAGE_NAME: "lec-building-service"
+  LEC_BUILDING_SERVICE_IMAGE_TAG: "latest"
+  LEC_BUILDING_SERVICE_PUBLIC_PORT: "29082"
+  LEC_REPORT_SERVICE_IMAGE_NAME: "lec-report-service"
+  LEC_REPORT_SERVICE_IMAGE_TAG: "latest"
+  LEC_REPORT_SERVICE_PUBLIC_PORT: "29083"
+  LEC_DOCX_TO_PDF_PUBLIC_PORT: "29085"
+  MODERATE_MUNICIPALITIES_SVC_PROXY_PASS_URL: http://municipalities_service:5000
+  MODERATE_BUILDINGS_SVC_PROXY_PASS_URL: http://buildings_service:5000
+  MODERATE_REPORT_SVC_PROXY_PASS_URL: http://report_service:5000
+  REPORT_FILE: report_template.docx
+
+env:
+  LEC_FRONTEND_IMAGE_NAME: "{{.LEC_FRONTEND_IMAGE_NAME}}"
+  LEC_FRONTEND_IMAGE_TAG: "{{.LEC_FRONTEND_IMAGE_TAG}}"
+  LEC_FRONTEND_PUBLIC_PORT: "{{.LEC_FRONTEND_PUBLIC_PORT}}"
+  LEC_MUNICIPALITY_SERVICE_IMAGE_NAME: "{{.LEC_MUNICIPALITY_SERVICE_IMAGE_NAME}}"
+  LEC_MUNICIPALITY_SERVICE_IMAGE_TAG: "{{.LEC_MUNICIPALITY_SERVICE_IMAGE_TAG}}"
+  LEC_MUNICIPALITY_SERVICE_PUBLIC_PORT: "{{.LEC_MUNICIPALITY_SERVICE_PUBLIC_PORT}}"
+  LEC_BUILDING_SERVICE_IMAGE_NAME: "{{.LEC_BUILDING_SERVICE_IMAGE_NAME}}"
+  LEC_BUILDING_SERVICE_IMAGE_TAG: "{{.LEC_BUILDING_SERVICE_IMAGE_TAG}}"
+  LEC_BUILDING_SERVICE_PUBLIC_PORT: "{{.LEC_BUILDING_SERVICE_PUBLIC_PORT}}"
+  LEC_REPORT_SERVICE_IMAGE_NAME: "{{.LEC_REPORT_SERVICE_IMAGE_NAME}}"
+  LEC_REPORT_SERVICE_IMAGE_TAG: "{{.LEC_REPORT_SERVICE_IMAGE_TAG}}"
+  LEC_REPORT_SERVICE_PUBLIC_PORT: "{{.LEC_REPORT_SERVICE_PUBLIC_PORT}}"
+  LEC_DOCX_TO_PDF_PUBLIC_PORT: "{{.LEC_DOCX_TO_PDF_PUBLIC_PORT}}"
+  MODERATE_GEOSERVER_PROXY_PASS_URL: "{{.LEC_GEOSERVER_PROXY_PASS_URL}}"
+  MODERATE_MUNICIPALITIES_SVC_PROXY_PASS_URL: "{{.MODERATE_MUNICIPALITIES_SVC_PROXY_PASS_URL}}"
+  MODERATE_BUILDINGS_SVC_PROXY_PASS_URL: "{{.MODERATE_BUILDINGS_SVC_PROXY_PASS_URL}}"
+  MODERATE_REPORT_SVC_PROXY_PASS_URL: "{{.MODERATE_REPORT_SVC_PROXY_PASS_URL}}"
+  REPORT_FILE: "{{.REPORT_FILE}}"
+
+tasks:
+  clone:
+    desc: "Clone the LEC Location Assessment Tool Git repository"
+    cmds:
+      - git clone {{.LEC_GIT_URL}} {{.LEC_DIR}}
+      - cd {{.LEC_DIR}} && git checkout {{.LEC_TREEISH}}
+    status:
+      - test -d {{.LEC_DIR}}
+
+  build-frontend:
+    desc: "Build the LEC Frontend Docker image"
+    deps:
+      - clone
+    dir: "{{.LEC_DIR}}/front/lec-app"
+    cmds:
+      - >
+        docker build
+        --build-arg VITE_MUNICIPALITIES_API_URL=/municipalities
+        --build-arg VITE_BUILDINGS_API_URL=/buildings
+        --build-arg VITE_GEOSERVER_API_URL=/geoserver
+        --build-arg VITE_REPORT_API_URL=/report
+        -t {{.LEC_FRONTEND_IMAGE_NAME}}:{{.LEC_FRONTEND_IMAGE_TAG}} .
+
+  build-municipality-service:
+    desc: "Build the LEC Municipality Service Docker image"
+    deps:
+      - clone
+    dir: "{{.LEC_DIR}}/back/municipalities_svc"
+    cmds:
+      - docker build -t {{.LEC_MUNICIPALITY_SERVICE_IMAGE_NAME}}:{{.LEC_MUNICIPALITY_SERVICE_IMAGE_TAG}} .
+
+  build-building-service:
+    desc: "Build the LEC Building Service Docker image"
+    deps:
+      - clone
+    dir: "{{.LEC_DIR}}/back/buildings_svc"
+    cmds:
+      - docker build -t {{.LEC_BUILDING_SERVICE_IMAGE_NAME}}:{{.LEC_BUILDING_SERVICE_IMAGE_TAG}} .
+
+  build-report-service:
+    desc: "Build the LEC Report Service Docker image"
+    deps:
+      - clone
+    dir: "{{.LEC_DIR}}/back/report_svc"
+    cmds:
+      - docker build -t {{.LEC_REPORT_SERVICE_IMAGE_NAME}}:{{.LEC_REPORT_SERVICE_IMAGE_TAG}} .
+
+  build-all:
+    desc: "Build all the LEC Docker images"
+    cmds:
+      - task: build-frontend
+      - task: build-municipality-service
+      - task: build-building-service
+      - task: build-report-service
+
+  up:
+    desc: "Start the LEC application"
+    deps:
+      - build-all
+    cmds:
+      - docker compose -p {{.LEC_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml up -d --wait
+
+  down:
+    desc: "Stop the LEC application"
+    cmds:
+      - docker compose -p {{.LEC_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down
+
+  clean:
+    desc: "Clean up the LEC application"
+    cmds:
+      - docker compose -p {{.LEC_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down -v
+      - cmd: rm -fr {{.LEC_DIR}}
+        ignore_error: true

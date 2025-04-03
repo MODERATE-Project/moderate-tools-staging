@@ -9,12 +9,14 @@ vars:
   NETWORK_NAME_BRICKLLM: "brickllm_network"
   NETWORK_NAME_SOLAR_CADASTRE: "solar_cadastre_network"
   NETWORK_NAME_BUILDING_BENCHMARK: "building_benchmark_network"
+  NETWORK_NAME_LEC: "lec_network"
 
 env:
   CADDY_ACME_CA: "{{.CADDY_ACME_CA}}"
   NETWORK_NAME_BRICKLLM: "{{.NETWORK_NAME_BRICKLLM}}"
   NETWORK_NAME_SOLAR_CADASTRE: "{{.NETWORK_NAME_SOLAR_CADASTRE}}"
   NETWORK_NAME_BUILDING_BENCHMARK: "{{.NETWORK_NAME_BUILDING_BENCHMARK}}"
+  NETWORK_NAME_LEC: "{{.NETWORK_NAME_LEC}}"
 
 dotenv: [.env.config]
 
@@ -22,6 +24,7 @@ includes:
   brickllm: ./brickllm/Taskfile.yml
   solar: ./solar/Taskfile.yml
   building-benchmark: ./building-benchmark/Taskfile.yml
+  lec: ./lec/Taskfile.yml
 
 tasks:
   check-env-file:
@@ -51,6 +54,7 @@ tasks:
       - task: brickllm:up
       - task: solar:up
       - task: building-benchmark:up
+      - task: lec:up
       - task: proxy-up
 
   down:
@@ -60,3 +64,4 @@ tasks:
       - task: brickllm:down
       - task: solar:down
       - task: building-benchmark:down
+      - task: lec:down
