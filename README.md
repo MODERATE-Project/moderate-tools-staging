@@ -11,7 +11,7 @@ Running the deployment task available here for the Solar Cadastre is not enough 
 3. Follow the [steps described in the MODERATE-Project/solar-cadastre](https://github.com/MODERATE-Project/solar-cadastre/blob/main/docs/geoserver.md) repository to configure GeoServer to publish the data from the restored database
 
 > [!TIP]
-> Please note that the URL of the Cloud SQL proxy configured in GeoServer for accessing the Solar Cadastre PostGIS database should be a private IP address, published as a service of type _Internal Load Balancer_ named `cloud-sql-internal-service`.
-
-> [!TIP]
-> The default configuration environment variables should be `SOLAR_CADASTRE_GEOSERVER_SCHEME_HOST=https://geoserver.moderate.cloud` and `SOLAR_CADASTRE_GEOSERVER_PATH=/geoserver/GeoModerate/ows`. This means that the workspace name should be `GeoModerate`.
+> Please note that in the case of the default configuration of the MODERATE platform:
+> * The URL of the Cloud SQL proxy configured in GeoServer for accessing the Solar Cadastre PostGIS database should be a private IP address, published as a service of type _Internal Load Balancer_ named `cloud-sql-internal-service`
+> * The default value of `SOLAR_CADASTRE_GEOSERVER_SCHEME_HOST` should be `https://geoserver.moderate.cloud`
+> * The default value of `SOLAR_CADASTRE_GEOSERVER_PATH` should be `/geoserver/GeoModerate/ows`. This means that the workspace name created for the Solar Cadastre during the configuration phase should be `GeoModerate`
