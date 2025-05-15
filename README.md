@@ -6,7 +6,7 @@ This repository contains configuration files and tasks for the MODERATE Staging 
 
 Running the deployment task available here for the Solar Cadastre is not enough to finalize configuration. The following steps need to be performed:
 
-1. Download the SQL dump containing the seed data for the Solar Cadastre, which is available for authenticated users only on MODERATE's GCS: https://storage.cloud.google.com/moderate-common-assets/solar-cadaster-postgis-seed.sql
+1. Download the SQL dump containing the seed data for the Solar Cadastre, which is available for authenticated users only on MODERATE's GCS: https://storage.cloud.google.com/moderate-common-assets/solar-cadaster-postgis-seed-v2.sql
 2. Load the SQL seed by running the `load-cloud-sql-dump` task in [MODERATE-Project/moderate-infrastructure](https://github.com/MODERATE-Project/moderate-infrastructure)
 3. Follow the [steps described in the MODERATE-Project/solar-cadastre](https://github.com/MODERATE-Project/solar-cadastre/blob/main/docs/geoserver.md) repository to configure GeoServer to publish the data from the restored database
 
