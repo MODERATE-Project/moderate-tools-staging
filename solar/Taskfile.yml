@@ -3,7 +3,7 @@ version: "3"
 vars:
   SOLAR_CADASTRE_COMPOSE_PROJECT_NAME: "solar-cadastre"
   SOLAR_CADASTRE_GIT_URL: "https://github.com/MODERATE-Project/solar-cadastre.git"
-  SOLAR_CADASTRE_TREEISH: "32a81d0"
+  SOLAR_CADASTRE_TREEISH: "37bfd29"
   SOLAR_CADASTRE_DIR: "{{.TASKFILE_DIR}}/solar-cadastre"
   SOLAR_CADASTRE_BACKEND_IMAGE_NAME: "solar-cadastre-backend"
   SOLAR_CADASTRE_BACKEND_IMAGE_TAG: "latest"
