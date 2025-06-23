@@ -1,0 +1,16 @@
+services:
+  app:
+    image: ${TIMESERIES_BENCHMARKING_IMAGE_NAME}:${TIMESERIES_BENCHMARKING_IMAGE_TAG}
+    restart: unless-stopped
+    ports:
+      - "${TIMESERIES_BENCHMARKING_PUBLIC_PORT}:80"
+    environment:
+      # R Shiny specific configurations
+      SHINY_LOG_STDERR: 1
+      SHINY_LOG_LEVEL: TRACE
+    networks:
+      - timeseries_benchmarking_network
+networks:
+  timeseries_benchmarking_network:
+    driver: bridge
+    name: ${NETWORK_NAME_TIMESERIES_BENCHMARKING}

@@ -1,0 +1,3 @@
+timeseries.{$DNS_HOSTNAME} {
+	reverse_proxy app.{$NETWORK_NAME_TIMESERIES_BENCHMARKING}:80
+} 

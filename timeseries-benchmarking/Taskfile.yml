@@ -1,0 +1,51 @@
+version: "3"
+
+vars:
+  TIMESERIES_BENCHMARKING_COMPOSE_PROJECT_NAME: "timeseries-benchmarking"
+  TIMESERIES_BENCHMARKING_GIT_URL: "https://github.com/MODERATE-Project/timeseries-energy-benchmarking.git"
+  TIMESERIES_BENCHMARKING_TREEISH: "0a0b611953115afb38271cb99463da6dd5fde7a5"
+  TIMESERIES_BENCHMARKING_DIR: "{{.TASKFILE_DIR}}/timeseries-energy-benchmarking"
+  TIMESERIES_BENCHMARKING_IMAGE_NAME: "timeseries-benchmarking"
+  TIMESERIES_BENCHMARKING_IMAGE_TAG: "latest"
+  TIMESERIES_BENCHMARKING_PUBLIC_PORT: "29090"
+
+env:
+  TIMESERIES_BENCHMARKING_IMAGE_NAME: "{{.TIMESERIES_BENCHMARKING_IMAGE_NAME}}"
+  TIMESERIES_BENCHMARKING_IMAGE_TAG: "{{.TIMESERIES_BENCHMARKING_IMAGE_TAG}}"
+  TIMESERIES_BENCHMARKING_PUBLIC_PORT: "{{.TIMESERIES_BENCHMARKING_PUBLIC_PORT}}"
+
+tasks:
+  clone:
+    desc: "Clone the Timeseries Energy Benchmarking Git repository"
+    cmds:
+      - git clone {{.TIMESERIES_BENCHMARKING_GIT_URL}} {{.TIMESERIES_BENCHMARKING_DIR}}
+      - cd {{.TIMESERIES_BENCHMARKING_DIR}} && git checkout {{.TIMESERIES_BENCHMARKING_TREEISH}}
+    status:
+      - test -d {{.TIMESERIES_BENCHMARKING_DIR}}
+
+  build:
+    desc: "Build the Timeseries Energy Benchmarking Docker image"
+    deps:
+      - clone
+    dir: "{{.TIMESERIES_BENCHMARKING_DIR}}"
+    cmds:
+      - docker build -t {{.TIMESERIES_BENCHMARKING_IMAGE_NAME}}:{{.TIMESERIES_BENCHMARKING_IMAGE_TAG}} .
+
+  up:
+    desc: "Start the Timeseries Energy Benchmarking Docker containers"
+    deps:
+      - build
+    cmds:
+      - docker compose -p {{.TIMESERIES_BENCHMARKING_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml up -d --build --wait
+
+  down:
+    desc: "Stop the Timeseries Energy Benchmarking Docker containers"
+    cmds:
+      - docker compose -p {{.TIMESERIES_BENCHMARKING_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down
+
+  clean:
+    desc: "Clean up the Timeseries Energy Benchmarking Docker containers"
+    cmds:
+      - docker compose -p {{.TIMESERIES_BENCHMARKING_COMPOSE_PROJECT_NAME}} -f {{.TASKFILE_DIR}}/docker-compose.yml down -v
+      - cmd: rm -fr {{.TIMESERIES_BENCHMARKING_DIR}}
+        ignore_error: true

@@ -17,6 +17,7 @@ services:
       NETWORK_NAME_SOLAR_CADASTRE: ${NETWORK_NAME_SOLAR_CADASTRE}
       NETWORK_NAME_BUILDING_BENCHMARK: ${NETWORK_NAME_BUILDING_BENCHMARK}
       NETWORK_NAME_LEC: ${NETWORK_NAME_LEC}
+      NETWORK_NAME_TIMESERIES_BENCHMARKING: ${NETWORK_NAME_TIMESERIES_BENCHMARKING}
     ports:
       - 80:80
       - 443:443
@@ -25,6 +26,7 @@ services:
       - solar_cadastre_network
       - building_benchmark_network
       - lec_network
+      - timeseries_benchmarking_network
 volumes:
   caddy_data: {}
   caddy_config: {}
@@ -40,4 +42,7 @@ networks:
     external: true
   lec_network:
     name: ${NETWORK_NAME_LEC}
+    external: true
+  timeseries_benchmarking_network:
+    name: ${NETWORK_NAME_TIMESERIES_BENCHMARKING}
     external: true
