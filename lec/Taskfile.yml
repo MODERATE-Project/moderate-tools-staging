@@ -3,7 +3,7 @@ version: "3"
 vars:
   LEC_COMPOSE_PROJECT_NAME: "staging-lec"
   LEC_GIT_URL: "https://github.com/MODERATE-Project/lec-location-assessment-tool"
-  LEC_TREEISH: "1785f82"
+  LEC_TREEISH: "f1abd824e84f47d8ae53bcc4cf6c78c0a01f7a6b"
   LEC_DIR: "{{.TASKFILE_DIR}}/lec"
   LEC_FRONTEND_IMAGE_NAME: "lec-frontend"
   LEC_FRONTEND_IMAGE_TAG: "latest"
