@@ -29,7 +29,7 @@ services:
   report_service:
     image: ${LEC_REPORT_SERVICE_IMAGE_NAME}:${LEC_REPORT_SERVICE_IMAGE_TAG}
     environment:
-      BUILDINGS_API_URL: ${MODERATE_BUILDINGS_SVC_PROXY_PASS_URL}
+      BUILDINGS_API_URL: http://buildings_service:5000/buildings
     ports:
       - "${LEC_REPORT_SERVICE_PUBLIC_PORT}:5000"
     restart: unless-stopped
