@@ -3,7 +3,7 @@ version: "3"
 vars:
   TIMESERIES_BENCHMARKING_COMPOSE_PROJECT_NAME: "timeseries-benchmarking"
   TIMESERIES_BENCHMARKING_GIT_URL: "https://github.com/MODERATE-Project/timeseries-energy-benchmarking.git"
-  TIMESERIES_BENCHMARKING_TREEISH: "0a0b611953115afb38271cb99463da6dd5fde7a5"
+  TIMESERIES_BENCHMARKING_TREEISH: "fbaa26ebe64af68b4f9ff96136d720e553971900"
   TIMESERIES_BENCHMARKING_DIR: "{{.TASKFILE_DIR}}/timeseries-energy-benchmarking"
   TIMESERIES_BENCHMARKING_IMAGE_NAME: "timeseries-benchmarking"
   TIMESERIES_BENCHMARKING_IMAGE_TAG: "latest"
@@ -18,10 +18,11 @@ tasks:
   clone:
     desc: "Clone the Timeseries Energy Benchmarking Git repository"
     cmds:
-      - git clone {{.TIMESERIES_BENCHMARKING_GIT_URL}} {{.TIMESERIES_BENCHMARKING_DIR}}
-      - cd {{.TIMESERIES_BENCHMARKING_DIR}} && git checkout {{.TIMESERIES_BENCHMARKING_TREEISH}}
+      - test -d {{.TIMESERIES_BENCHMARKING_DIR}} || git clone {{.TIMESERIES_BENCHMARKING_GIT_URL}} {{.TIMESERIES_BENCHMARKING_DIR}}
+      - git -C {{.TIMESERIES_BENCHMARKING_DIR}} fetch origin
+      - git -C {{.TIMESERIES_BENCHMARKING_DIR}} checkout {{.TIMESERIES_BENCHMARKING_TREEISH}}
     status:
-      - test -d {{.TIMESERIES_BENCHMARKING_DIR}}
+      - cd {{.TIMESERIES_BENCHMARKING_DIR}} && test "$(git rev-parse HEAD)" = "{{.TIMESERIES_BENCHMARKING_TREEISH}}"
 
   build:
     desc: "Build the Timeseries Energy Benchmarking Docker image"
