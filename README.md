@@ -6,9 +6,26 @@ This repository contains configuration files and tasks for the MODERATE Staging 
 
 Running the deployment task available here for the Solar Cadastre is not enough to finalize configuration. The following steps need to be performed:
 
-1. Download the SQL dump containing the seed data for the Solar Cadastre, which is available for authenticated users only on MODERATE's GCS: https://storage.cloud.google.com/moderate-common-assets/solar-cadaster-postgis-seed-v2.sql
-2. Load the SQL seed by running the `load-cloud-sql-dump` task in [MODERATE-Project/moderate-infrastructure](https://github.com/MODERATE-Project/moderate-infrastructure)
-3. Follow the [steps described in the MODERATE-Project/solar-cadastre](https://github.com/MODERATE-Project/solar-cadastre/blob/main/docs/geoserver.md) repository to configure GeoServer to publish the data from the restored database
+1. Download the v3 database archive and GeoServer raster from the public [Solar Cadastre dataset release](https://github.com/MODERATE-Project/moderate-tools-staging/releases/tag/solar-data-2026-10-06). V2 is available for older deployments.
+
+   | Dataset | Download |
+   | --- | --- |
+   | PostGIS seed v3 (default, exported 2026-04-09) | [solar-cadaster-postgis-seed-v3.dump](https://github.com/MODERATE-Project/moderate-tools-staging/releases/download/solar-data-2026-10-06/solar-cadaster-postgis-seed-v3.dump) |
+   | PostGIS seed v2 (older version, exported 2025-05-08) | [solar-cadaster-postgis-seed-v2.dump](https://github.com/MODERATE-Project/moderate-tools-staging/releases/download/solar-data-2026-10-06/solar-cadaster-postgis-seed-v2.dump) |
+   | GeoServer PV generation raster | [solar-cadaster-pv-generation-cells.tif](https://github.com/MODERATE-Project/moderate-tools-staging/releases/download/solar-data-2026-10-06/solar-cadaster-pv-generation-cells.tif) |
+
+   Check the downloads against the SHA-256 checksums in the release notes.
+
+2. Restore the archive into an empty PostgreSQL database with PostGIS and PostGIS Raster available. Both archives use PostgreSQL's custom format and were exported with PostgreSQL 14.15. Restore v3 with:
+
+   ```bash
+   pg_restore --no-owner --no-acl --exit-on-error \
+     --dbname=YOUR_DATABASE solar-cadaster-postgis-seed-v3.dump
+   ```
+
+   Replace `YOUR_DATABASE` with your database name. Set the host, port, user, and authentication through PostgreSQL connection options or environment variables.
+
+3. Follow the [Solar Cadastre GeoServer guide](https://github.com/MODERATE-Project/solar-cadastre/blob/main/docs/geoserver.md) to publish the restored database and raster layers. Use the `.tif` downloaded above when the guide asks for the raster file.
 
 > [!TIP]
 > Please note that in the case of the default configuration of the MODERATE platform:
