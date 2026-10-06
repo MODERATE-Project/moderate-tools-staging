@@ -25,10 +25,6 @@ Running the deployment task available here for the Solar Cadastre is not enough 
 
    Replace `YOUR_DATABASE` with your database name. Set the host, port, user, and authentication through PostgreSQL connection options or environment variables.
 
-3. Follow the [Solar Cadastre GeoServer guide](https://github.com/MODERATE-Project/solar-cadastre/blob/main/docs/geoserver.md) to publish the restored database and raster layers. Use the `.tif` downloaded above when the guide asks for the raster file.
+3. Follow the [Solar Cadastre GeoServer guide](https://github.com/MODERATE-Project/solar-cadastre/blob/main/docs/geoserver.md) to publish the restored database and raster layers. Create a workspace named `GeoModerate` to match the application's layer references. Use the `.tif` downloaded above when the guide asks for the raster file.
 
-> [!TIP]
-> Please note that in the case of the default configuration of the MODERATE platform:
-> * The URL of the Cloud SQL proxy configured in GeoServer for accessing the Solar Cadastre PostGIS database should be a private IP address, published as a service of type _Internal Load Balancer_ named `cloud-sql-internal-service`
-> * The default value of `SOLAR_CADASTRE_GEOSERVER_SCHEME_HOST` should be `https://geoserver.moderate.cloud`
-> * The default value of `SOLAR_CADASTRE_GEOSERVER_PATH` should be `/geoserver/GeoModerate/ows`. This means that the workspace name created for the Solar Cadastre during the configuration phase should be `GeoModerate`
+4. In `.env.config`, set `SOLAR_CADASTRE_GEOSERVER_SCHEME_HOST` to the scheme and hostname of your GeoServer instance. Set `SOLAR_CADASTRE_GEOSERVER_PATH` to `/geoserver/GeoModerate/ows` for the `GeoModerate` workspace.
